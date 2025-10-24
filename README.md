@@ -58,7 +58,7 @@ El proyecto debe entregarse como:
 ---
 
 ## 🧭 Estructura Sugerida del Proyecto
-
+```
 BarberiaLosHermanos/
 │
 ├── Program.cs
@@ -74,7 +74,7 @@ BarberiaLosHermanos/
 │ ├── Validaciones.cs
 │
 └── README.md
-
+```
 ---
 
 ## ⚖️ Licencia
