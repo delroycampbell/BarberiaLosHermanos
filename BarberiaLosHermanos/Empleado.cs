@@ -9,7 +9,7 @@ using System.Globalization;
 
 namespace BarberiaLosHermanos
     {
-    public class Empleado : Persona
+    public class Empleado : Persona, IGestionServicioEmpleado, IGestorCitasEmpleado
         {
         // Atributos
         private int idEmpleado;
@@ -37,6 +37,8 @@ namespace BarberiaLosHermanos
         public DateTime FechaContratacion { get => fechaContratacion; set => fechaContratacion = value; }
         public List<Servicio> ServicioOfrecido { get => servicioOfrecido; set => servicioOfrecido = value; }
         public List<int> ClientesAsignados { get => clientesAsignados; set => clientesAsignados = value; }
+        public List<Cita> CitasAsignadas { get => citasAsignadas; set => citasAsignadas = value; }
+
 
         // Constructor con ID automático
         public Empleado(string nombre, string apellido1, string apellido2, string telefono, string correo,
@@ -51,9 +53,7 @@ namespace BarberiaLosHermanos
             this.clientesAsignados = new List<int>();
             }
 
-        public Empleado()
-            {
-            }
+        public Empleado() { }
 
 
         // Generar ID único
@@ -91,5 +91,45 @@ namespace BarberiaLosHermanos
             {
             return salario * 12;
             }
+
+        //Validaciones #
+
+        // Validación interna del rol del empleado
+        private bool ValidarServicioPorRol(Servicio servicio)
+            {
+            switch (puesto)
+                {
+                case ePuestos.Barbero:
+                    return servicio.Categoria == Servicio.eCategoriaServicio.Barbero;
+                case ePuestos.Estilista:
+                    return servicio.Categoria == Servicio.eCategoriaServicio.Estilista;
+                case ePuestos.Asistente:
+                case ePuestos.Administrativo:
+                    return true; // Pueden ofrecer servicios varios
+                default:
+                    return false;
+                }
+            }
+        //Implementacion de las interfaces
+        //IGestionServicioEmpleado
+        private GestorServicio gestorServicio = new GestorServicio();
+        public void AgregarServicio(Servicio nuevoServicio)
+            {
+            if (nuevoServicio == null)
+                throw new ArgumentException("El servicio no puede ser nulo.");
+
+            // Validación principal de rol
+            if (!ValidarServicioPorRol(nuevoServicio))
+                throw new InvalidOperationException($"El empleado {Puesto} no puede ofrecer el servicio '{nuevoServicio.NombreServicio}'.");
+
+            servicioOfrecido.Add(nuevoServicio);
+            }
+
+        public List<Servicio> ObtenerTodosServicios()
+            {
+            return gestorServicio.ObtenerTodosServicios();
+            }
+        //IGestorCitasEmpleado
+
         } // fin de la clase Empleado
     }

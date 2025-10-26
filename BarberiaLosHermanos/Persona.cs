@@ -6,14 +6,14 @@ namespace BarberiaLosHermanos
     {
     public abstract class Persona
         {
-        // 🔹 Atributos privados
+        // Atributos privados
         private string nombre;
         private string apellido1;
         private string apellido2;
         private string telefono;
         private string correo;
 
-        // 🔹 Propiedades públicas
+        // Propiedades públicas
         public string Nombre
             {
             get => nombre;
@@ -64,7 +64,7 @@ namespace BarberiaLosHermanos
                 }
             }
 
-        // 🔹 Constructores
+        // Constructores
         public Persona() { }
 
         public Persona(string nombre, string apellido1, string apellido2, string telefono, string correo)
@@ -76,16 +76,16 @@ namespace BarberiaLosHermanos
             Correo = correo;     // valida formato
             }
 
-        // 🔹 Método abstracto (debe implementarse en subclases)
+        // Método abstracto (debe implementarse en subclases)
         public abstract string MostrarDatos();
 
-        // 🔹 Representación textual genérica
+        // Representación textual genérica
         public override string ToString()
             {
             return $"{nombre} {apellido1} {apellido2}, Tel: {telefono}, Correo: {correo}";
             }
 
-        // 🔹 Validación de correo
+        // Validación de correo
         protected static bool ValidarCorreo(string correo)
             {
             if (string.IsNullOrWhiteSpace(correo))
@@ -102,7 +102,7 @@ namespace BarberiaLosHermanos
                 }
             }
 
-        // 🔹 Validación de teléfono
+        // Validación de teléfono
         protected static bool ValidarTelefono(string telefono)
             {
             if (string.IsNullOrWhiteSpace(telefono))
