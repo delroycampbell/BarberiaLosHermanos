@@ -1,16 +1,15 @@
 ﻿using System;
 using BarberiaLosHermanos;
 
-Console.WriteLine("Hello, World!");
 
-Barbero barbero1 = new Barbero("Delroy","Campbell","Thomas","70725850","TEST@EMAIL.COM",350000, DateTime.Now, 2);
+Console.WriteLine("Bienvenido a la Barbería Los Hermanos!");
+// Crear un cliente de ejemplo
+// Menu de opciones para manejar los servicios
+var s1 = new Servicio(1, "Corte Clásico", 5000, "Corte de cabello tradicional", Servicio.eCategoriaServicio.Barbero);
+var s2 = new Servicio(2, "Manicure Básico", 4000, "Limpieza y esmaltado", Servicio.eCategoriaServicio.Manicure);
 
-barbero1.HorasTrabajadas = 160;
-barbero1.ComisionPorCorte = 1500;
-barbero1.Especialidades = new List<string> { "Cortes Clásicos", "Afeitado Tradicional" };
-
-Console.WriteLine(barbero1.MostrarDatos());
-
+Console.WriteLine(s1);
+Console.WriteLine(s2);
 
 
 
