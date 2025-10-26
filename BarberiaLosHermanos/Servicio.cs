@@ -7,6 +7,17 @@
         private string nombreServicio;
         private double precio;
         private string descripcion;
+        private eCategoriaServicio categoria;
+
+        //enum categoria servicio
+        public enum eCategoriaServicio
+            {
+            Barbero,
+            Manicure,
+            Masaje,
+            Estilista,
+            Otros
+            }
 
         // Propiedades
         public int IdServicio
@@ -54,18 +65,33 @@
                 }
             }
 
-        // Constructor
-        public Servicio(int idServicio, string nombreServicio, double precio, string descripcion)
+        public eCategoriaServicio Categoria
             {
-            this.IdServicio = idServicio;
-            this.NombreServicio = nombreServicio;
-            this.Precio = precio;
-            this.Descripcion = descripcion;
+            get => categoria;
+            set
+                {
+                if (!Enum.IsDefined(typeof(eCategoriaServicio), value))
+                    throw new ArgumentException("Categoría de servicio inválida.");
+                categoria = value;
+                }
+            }
+
+        // Constructor
+        public Servicio() { }
+
+        public Servicio(int idServicio, string nombreServicio, double precio, string descripcion, eCategoriaServicio categoriaServicio)
+            {
+            IdServicio = idServicio;
+            NombreServicio = nombreServicio;
+            Precio = precio;
+            Descripcion = descripcion;
+            Categoria = categoriaServicio;
             }
         // Método para mostrar información del servicio
         public override string ToString()
             {
-            return $"ID Servicio: {idServicio}, Nombre: {nombreServicio}, Precio: {precio:C}, Descripción: {descripcion}";
+            return $"ID Servicio: {idServicio}, Nombre: {nombreServicio}, Precio: {precio:0.00},+ " +
+                $"Categoría: {categoria}, $Descripción: {descripcion}";
             }
         public void MostrarServicio()
             {
@@ -74,25 +100,10 @@
 
         //Metodos para validar datos si es necesario
 
-        private protected bool ValidarPrecio(double precio)
-            {
-            return precio >= 0;
-            }
+        private protected bool ValidarPrecio(double precio) => precio >= 0;
+        private protected bool ValidarNombreServicio(string nombreServicio) => !string.IsNullOrWhiteSpace(nombreServicio);
+        private protected bool ValidarDescripcion(string descripcion) => !string.IsNullOrWhiteSpace(descripcion);
+        private protected bool ValidarIdServicio(int idServicio) => idServicio > 0;
+        }
+    }// fin de la clase Servicio
 
-        private protected bool ValidarNombreServicio(string nombreServicio)
-            {
-            return !string.IsNullOrWhiteSpace(nombreServicio);
-            }
-
-        private protected bool ValidarDescripcion(string descripcion)
-            {
-            return !string.IsNullOrWhiteSpace(descripcion);
-            }
-
-        private protected bool ValidarIdServicio(int idServicio)
-            {
-            return idServicio > 0;
-            }
-        }// fin de la clase Servicio
-
-    }
