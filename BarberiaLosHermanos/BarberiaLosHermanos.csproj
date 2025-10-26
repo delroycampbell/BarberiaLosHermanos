@@ -8,4 +8,8 @@
     <Configurations>Debug;Release;Normal</Configurations>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Menu\" />
+  </ItemGroup>
+
 </Project>

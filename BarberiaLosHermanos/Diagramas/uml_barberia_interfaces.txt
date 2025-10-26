@@ -1,0 +1,139 @@
+@startuml
+
+' =======================
+'     Enumeraciones
+' =======================
+
+enum eEstadoCita {
+  Pendiente
+  Confirmada
+  Cancelada
+  Completada
+}
+
+enum eTipoCita {
+  Barberia
+  Spa
+  Masaje
+  Facial
+  Depilacion
+  Otro
+}
+
+enum eCategoriaServicio {
+  Barbero
+  Manicurista
+  Estilista
+  Masajista
+}
+
+' =======================
+'     Interfaces
+' =======================
+
+interface IGestionCitas {
+  + AgregarCita(cita: Cita): void
+  + CancelarCita(idCita: int): void
+  + VerCitas(listaGlobal: List<Cita>): List<Cita>
+}
+
+interface IGestionServicios {
+  + AgregarServicio(servicio: Servicio): void
+  + EliminarServicio(idServicio: int): void
+  + ModificarPrecio(idServicio: int, nuevoPrecio: double): void
+  + VerServicios(): List<Servicio>
+}
+
+' =======================
+'     Clases Principales
+' =======================
+
+abstract class Persona {
+  - nombre: String
+  - apellido1: String
+  - apellido2: String
+  - telefono: String
+  - correo: String
+  + Nombre { get; set; }
+  + Apellido1 { get; set; }
+  + Apellido2 { get; set; }
+  + Telefono { get; set; }
+  + Correo { get; set; }
+  + ValidarCorreo(correo: String): bool
+  + ValidarTelefono(telefono: String): bool
+}
+
+class Cliente {
+  - idCliente: int
+  - historialCitas: List<Cita>
+  + SolicitarCita(servicioSolicitado: Servicio, fechaCita: DateTime): Cita
+}
+
+class Empleado {
+  - idEmpleado: int
+  - puesto: String
+  - salario: double
+  - fechaContratacion: DateTime
+  + CalcularSalario(salario: Double): Double
+  + ConfirmarCita(cita: Cita): void
+}
+
+class Barbero {
+  - especialidad: String
+  - horasTrabajadas: Double
+  - comisionPorCorte: Double
+  + RegistrarCorte(precioServicio: Double): void
+}
+
+class Servicio {
+  - idServicio: int
+  - nombre: String
+  - descripcion: String
+  - precio: Double
+  - categoria: eCategoriaServicio
+  + MostrarServicio(): void
+}
+
+class Cita {
+  - idCita: int
+  - cliente: Cliente
+  - empleado: Empleado
+  - servicios: List<Servicio>
+  - estado: eEstadoCita
+  - tipoCita: eTipoCita
+  - fechaHoraCita: DateTime
+  + MostrarCita(): void
+}
+
+class GestorCitas {
+  - listaCitas: List<Cita>
+  + AgregarCita(cita: Cita): void
+  + BuscarPorFecha(fecha: DateTime): List<Cita>
+}
+
+class GestorServicio {
+  - listaServicios: List<Servicio>
+  + AgregarServicio(servicio: Servicio): void
+  + BuscarServicio(nombre: String): Servicio
+}
+
+' =======================
+'     Relaciones UML
+' =======================
+
+Persona <|-- Cliente
+Persona <|-- Empleado
+Empleado <|-- Barbero
+
+Cliente ..|> IGestionCitas
+Empleado ..|> IGestionCitas
+Empleado ..|> IGestionServicios
+
+GestorCitas *-- Cita
+GestorServicio *-- Servicio
+
+Cita --> Cliente
+Cita --> Empleado
+Cita --> "*" Servicio
+
+@enduml
