@@ -75,6 +75,7 @@ namespace BarberiaLosHermanos
             get => tipoMembresia;
             set => tipoMembresia = value;
             }
+        public eTipoMembresia TipoMembresia { get; internal set; }
 
         // Método heredado para mostrar datos
         public override string MostrarDatos()
@@ -83,7 +84,7 @@ namespace BarberiaLosHermanos
                    $"Nombre: {Nombre} {Apellido1} {Apellido2}\n" +
                    $"Teléfono: {Telefono}\n" +
                    $"Correo: {Correo}\n" +
-                   $"Fecha de Registro: {fechaRegistro:d}\n" +
+                   $"Fecha de Registro: {fechaRegistro:dd/MM/yyyy HH:mm:ss}\n" +
                    $"Puntos Acumulados: {puntosAcumulados}\n" +
                    $"Membresía: {tipoMembresia}";
             }

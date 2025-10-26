@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Globalization;
+
+
 
 namespace BarberiaLosHermanos
     {
@@ -68,7 +71,7 @@ namespace BarberiaLosHermanos
             sb.AppendLine($"Teléfono: {Telefono}");
             sb.AppendLine($"Correo: {Correo}");
             sb.AppendLine($"Puesto: {puesto}");
-            sb.AppendLine($"Salario: {salario:C}");
+            sb.AppendLine($"Salario: {salario:N2} colones");
             sb.AppendLine($"Fecha de Contratación: {fechaContratacion:d}");
             sb.AppendLine($"Servicios Ofrecidos: {string.Join(", ", servicioOfrecido)}");
             sb.AppendLine($"Clientes Asignados: {string.Join(", ", clientesAsignados)}");

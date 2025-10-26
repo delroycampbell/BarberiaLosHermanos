@@ -157,7 +157,7 @@ namespace BarberiaLosHermanos
             this.CostoTotal = CalcularCostoTotal(inputServicios);
             this.Estado = inputEstado;
             this.Duracion = inputDuracion;
-            this.TipoCita = inputTipoCita;
+            this.TipoCitaAsignada = inputTipoCita;
             }
 
         // Métodos

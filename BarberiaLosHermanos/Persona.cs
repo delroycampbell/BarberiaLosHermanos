@@ -1,38 +1,45 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BarberiaLosHermanos
     {
     public abstract class Persona
         {
-        // Atributos privados
+        // 🔹 Atributos privados
         private string nombre;
         private string apellido1;
         private string apellido2;
         private string telefono;
         private string correo;
 
-        // Propiedades públicas
+        // 🔹 Propiedades públicas
         public string Nombre
             {
             get => nombre;
-            set => nombre = value;
+            set
+                {
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentException("El nombre no puede estar vacío.");
+                nombre = value.Trim();
+                }
             }
 
         public string Apellido1
             {
             get => apellido1;
-            set => apellido1 = value;
+            set
+                {
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentException("El primer apellido no puede estar vacío.");
+                apellido1 = value.Trim();
+                }
             }
 
         public string Apellido2
             {
             get => apellido2;
-            set => apellido2 = value;
+            set => apellido2 = string.IsNullOrWhiteSpace(value) ? string.Empty : value.Trim();
             }
 
         public string Telefono
@@ -40,10 +47,9 @@ namespace BarberiaLosHermanos
             get => telefono;
             set
                 {
-                if (ValidarTelefono(value))
-                    telefono = value;
-                else
-                    throw new ArgumentException("Teléfono inválido.");
+                if (!ValidarTelefono(value))
+                    throw new ArgumentException("Teléfono inválido. Debe contener solo números y tener entre 8 y 15 dígitos.");
+                telefono = value.Trim();
                 }
             }
 
@@ -52,35 +58,34 @@ namespace BarberiaLosHermanos
             get => correo;
             set
                 {
-                if (ValidarCorreo(value))
-                    correo = value;
-                else
+                if (!ValidarCorreo(value))
                     throw new ArgumentException("Correo electrónico inválido.");
+                correo = value.Trim();
                 }
             }
 
-        // Constructores
+        // 🔹 Constructores
         public Persona() { }
 
         public Persona(string nombre, string apellido1, string apellido2, string telefono, string correo)
             {
-            this.Nombre = nombre;
-            this.Apellido1 = apellido1;
-            this.Apellido2 = apellido2;
-            this.Telefono = telefono; // valida formato
-            this.Correo = correo;     // valida formato
+            Nombre = nombre;
+            Apellido1 = apellido1;
+            Apellido2 = apellido2;
+            Telefono = telefono; // valida formato
+            Correo = correo;     // valida formato
             }
 
-        // Método abstracto (obligatorio en subclases)
+        // 🔹 Método abstracto (debe implementarse en subclases)
         public abstract string MostrarDatos();
 
-        // Método general de texto
+        // 🔹 Representación textual genérica
         public override string ToString()
             {
             return $"{nombre} {apellido1} {apellido2}, Tel: {telefono}, Correo: {correo}";
             }
 
-        // Validación de correo
+        // 🔹 Validación de correo
         protected static bool ValidarCorreo(string correo)
             {
             if (string.IsNullOrWhiteSpace(correo))
@@ -97,15 +102,14 @@ namespace BarberiaLosHermanos
                 }
             }
 
-        // Validación de teléfono
+        // 🔹 Validación de teléfono
         protected static bool ValidarTelefono(string telefono)
             {
             if (string.IsNullOrWhiteSpace(telefono))
                 return false;
 
-            // Permitir solo números y longitud razonable
+            // Solo dígitos y longitud razonable
             return telefono.All(char.IsDigit) && telefono.Length >= 8 && telefono.Length <= 15;
             }
         }
     }
-
