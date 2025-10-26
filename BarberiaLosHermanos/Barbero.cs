@@ -88,11 +88,13 @@ namespace BarberiaLosHermanos
 
         public override string MostrarDatos()
             {
-            var sb = new StringBuilder(base.MostrarDatos());
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine(base.MostrarDatos());
             sb.AppendLine($"Años de Experiencia: {añosExperiencia}");
-            sb.AppendLine($"Especialidades: {(especialidades != null && especialidades.Any() ? string.Join(", ", especialidades) : "Sin especialidades")}");
+            sb.AppendLine($"Especialidades: {(especialidades != null && especialidades.Count > 0 ? string.Join(", ", especialidades) : "Ninguna")}");
             sb.AppendLine($"Horas Trabajadas: {horasTrabajadas}");
-            sb.AppendLine($"Comisión por Corte: {comisionPorCorte:C}");
+            sb.AppendLine($"Comisión por Corte: {comisionPorCorte:N2} colones");
+            sb.AppendLine($"Salario total con comisión: {(Salario + comisionPorCorte):N2} colones");
             return sb.ToString();
             }
         }
