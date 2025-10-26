@@ -19,8 +19,8 @@ namespace BarberiaLosHermanos
 
         //Metodos de la clase
 
-        // Agregar un nuevo servicio y su precio
-        public void AgregarServicio(string nombreServicio, double precio, string descripcion)
+        //Agregar un nuevo servicio y su precio
+        public void AgregarServicio(string nombreServicio, double precio, string descripcion, Servicio.eCategoriaServicio categoria)
             {
             if (string.IsNullOrWhiteSpace(nombreServicio))
                 throw new ArgumentException("El nombre del servicio no puede estar vacío.");
@@ -29,11 +29,18 @@ namespace BarberiaLosHermanos
                 throw new ArgumentException("El precio del servicio no puede ser negativo.");
 
             int nuevoId = listaServicios.Count > 0 ? listaServicios.Max(s => s.IdServicio) + 1 : 1;
-            var nuevoServicio = new Servicio(nuevoId, nombreServicio.Trim(), precio, descripcion.Trim());
+
+            if (listaServicios.Any(s => s.NombreServicio.Equals(nombreServicio.Trim(), StringComparison.OrdinalIgnoreCase)
+                                     && s.Categoria == categoria))
+                throw new InvalidOperationException($"Ya existe un servicio '{nombreServicio}' en la categoría {categoria}.");
+
+            var nuevoServicio = new Servicio(nuevoId, nombreServicio.Trim(), precio, descripcion.Trim(), categoria);
             listaServicios.Add(nuevoServicio);
+
+            Console.WriteLine($"Servicio '{nombreServicio}' agregado correctamente con categoría {categoria}.");
             }
 
-        // Sobrecarga: agregar un objeto Servicio completo
+        //Sobrecarga: agregar un objeto Servicio completo
         public void AgregarServicio(Servicio nuevoServicio)
             {
             if (nuevoServicio == null)
@@ -46,15 +53,16 @@ namespace BarberiaLosHermanos
                 throw new ArgumentException("El precio del servicio no puede ser negativo.");
 
             listaServicios.Add(nuevoServicio);
+            Console.WriteLine($"Servicio '{nuevoServicio.NombreServicio}' agregado correctamente (por objeto).");
             }
 
-        // Listar todos los servicios (copia segura)
+        //Listar todos los servicios (copia segura)
         public List<Servicio> ObtenerTodosServicios()
             {
             return new List<Servicio>(listaServicios);
             }
 
-        // Buscar por nombre
+        //Buscar por nombre
         public List<Servicio> BuscarServicioPorNombre(string nombreServicio)
             {
             if (string.IsNullOrWhiteSpace(nombreServicio))
@@ -75,7 +83,7 @@ namespace BarberiaLosHermanos
             return resultados;
             }
 
-        // Buscar por ID (devuelve solo uno)
+        //Buscar por ID (devuelve solo uno)
         public Servicio BuscarServicioPorID(int idServicio)
             {
             if (idServicio <= 0)
@@ -95,7 +103,7 @@ namespace BarberiaLosHermanos
             return servicio;
             }
 
-        // Actualizar precio de un servicio existente por ID
+        //Actualizar precio de un servicio existente por ID
         public bool ActualizarPrecioPorId(int idServicio, double nuevoPrecio)
             {
             if (nuevoPrecio < 0)
@@ -110,7 +118,7 @@ namespace BarberiaLosHermanos
             return true;
             }
 
-        // Actualizar precio de un servicio existente por nombre
+        //Actualizar precio de un servicio existente por nombre
         public bool ActualizarPrecioPorNombre(string nombreServicio, double nuevoPrecio)
             {
             if (string.IsNullOrWhiteSpace(nombreServicio))
@@ -130,7 +138,7 @@ namespace BarberiaLosHermanos
             return true;
             }
 
-        // Eliminar servicio por ID
+        //Eliminar servicio por ID
         public bool EliminarServicio(int idServicio)
             {
             var servicio = BuscarServicioPorID(idServicio);
@@ -142,6 +150,4 @@ namespace BarberiaLosHermanos
             return true;
             }
         }
-
     } //fin de la clase GestorServicio
-
