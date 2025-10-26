@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BarberiaLosHermanos
     {
-    public class Cliente : Persona
+    public class Cliente : Persona, IGestionCitasCliente
         {
         // Atributos
         private int idCliente;
@@ -94,6 +94,38 @@ namespace BarberiaLosHermanos
             {
             Console.WriteLine(MostrarDatos());
             }
+
+        //Agregar cita al historial
+        public void AgregarCita(Cita nuevaCita)
+            {
+            if (nuevaCita == null)
+                throw new ArgumentNullException(nameof(nuevaCita), "La cita no puede ser nula.");
+            // 7 dias minimo
+            if (nuevaCita.FechaHoraCita < DateTime.Now.AddDays(7))
+                throw new ArgumentException("La cita debe ser programada con al menos 7 días de anticipación.");
+
+            //Evitar duplicados
+            if (historialCitas.Exists(c => c.IdCita == nuevaCita.IdCita))
+                throw new InvalidOperationException("La cita ya existe en el historial del cliente.");
+
+            //Evitar citas en domingo
+            if (nuevaCita.FechaHoraCita.DayOfWeek == DayOfWeek.Sunday)
+                throw new ArgumentException("No se pueden programar citas en domingo.");
+            // Regla: el cliente solo puede agendar citas a su propio nombre
+            if (nuevaCita.Cliente.IdCliente != this.IdCliente)
+                throw new InvalidOperationException("Solo puedes agendar citas para ti mismo.");
+
+            //Agregar cita al historial
+            historialCitas.Add(nuevaCita);
+            Console.WriteLine("Cita agregada al historial del cliente.");
+            }
+
+
+        // Cancelar citas pendientes, y si esta confirmada se debe cancelar con al menos 42 horas de anticipacion
+
+        public void C
+
+
 
         // Validaciones
         private bool ValidarIdCliente(int id)
