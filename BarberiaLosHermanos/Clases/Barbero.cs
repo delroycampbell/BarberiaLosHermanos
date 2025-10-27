@@ -1,32 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
-namespace BarberiaLosHermanos
+namespace BarberiaLosHermanos.Clases
     {
-    internal class Barbero : Empleado
+    public class Barbero : Empleado
         {
-        // Atributos específicos de Barbero
-        private int añosExperiencia;
-        private List<string>? especialidades = new List<string>();
+        private int anosExperiencia;
+        private List<string> especialidades;
         private double horasTrabajadas;
         private double comisionPorCorte;
 
-        // Propiedades
-        public int AñosExperiencia
+        public int AnosExperiencia
             {
-            get => añosExperiencia;
+            get => anosExperiencia;
             set
                 {
-                if (ValidarAñosExperiencia(value))
-                    añosExperiencia = value;
-                else
+                if (value < 0 || value > 60)
                     throw new ArgumentException("Años de experiencia inválidos.");
+                anosExperiencia = value;
                 }
             }
 
-        public List<string>? Especialidades
+        public List<string> Especialidades
             {
             get => especialidades;
             set => especialidades = value ?? new List<string>();
@@ -54,29 +50,21 @@ namespace BarberiaLosHermanos
                 }
             }
 
-        // Constructor
         public Barbero(string nombre, string apellido1, string apellido2, string telefono, string correo,
                        double salario, DateTime fechaContratacion,
-                       int añosExperiencia, List<string>? especialidades = null)
-            : base(nombre, apellido1, apellido2, telefono, correo, ePuestos.Barbero, salario, fechaContratacion)
+                       int anosExperiencia, List<string>? especialidades = null)
+            : base(nombre, apellido1, apellido2, telefono, correo, PuestoEmpleado.Barbero, salario)
             {
-            this.AñosExperiencia = añosExperiencia;
-            this.Especialidades = especialidades ?? new List<string>();
-            this.horasTrabajadas = 0;
-            this.comisionPorCorte = 0;
+            AnosExperiencia = anosExperiencia;
+            Especialidades = especialidades ?? new List<string>();
+            horasTrabajadas = 0;
+            comisionPorCorte = 0;
             }
 
-        // Validaciones
-        private bool ValidarAñosExperiencia(int años)
-            {
-            return años >= 0 && años <= 60; // rango razonable
-            }
-
-        // Métodos específicos de Barbero
         public void MostrarEspecialidades()
             {
             Console.WriteLine($"Especialidades de {Nombre} {Apellido1}:");
-            if (especialidades == null || especialidades.Count == 0)
+            if (especialidades.Count == 0)
                 {
                 Console.WriteLine("- Sin especialidades registradas.");
                 return;
@@ -86,16 +74,21 @@ namespace BarberiaLosHermanos
                 Console.WriteLine($"- {esp}");
             }
 
-        public override string MostrarDatos()
+        public override void MostrarInfo()
             {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine(base.MostrarDatos());
-            sb.AppendLine($"Años de Experiencia: {añosExperiencia}");
-            sb.AppendLine($"Especialidades: {(especialidades != null && especialidades.Count > 0 ? string.Join(", ", especialidades) : "Ninguna")}");
-            sb.AppendLine($"Horas Trabajadas: {horasTrabajadas}");
-            sb.AppendLine($"Comisión por Corte: {comisionPorCorte:N2} colones");
-            sb.AppendLine($"Salario total con comisión: {(Salario + comisionPorCorte):N2} colones");
-            return sb.ToString();
+            sb.AppendLine($"ID: {IdEmpleado}");
+            sb.AppendLine($"Nombre: {Nombre} {Apellido1} {Apellido2}");
+            sb.AppendLine($"Teléfono: {Telefono}");
+            sb.AppendLine($"Correo: {Correo}");
+            sb.AppendLine($"Puesto: {Puesto}");
+            sb.AppendLine($"Salario base: {Salario:N2} colones");
+            sb.AppendLine($"Años de experiencia: {anosExperiencia}");
+            sb.AppendLine($"Horas trabajadas: {horasTrabajadas}");
+            sb.AppendLine($"Comisión por corte: {comisionPorCorte:N2} colones");
+            sb.AppendLine($"Salario total (con comisión): {Salario + comisionPorCorte:N2} colones");
+
+            Console.WriteLine(sb.ToString());
             }
         }
     }

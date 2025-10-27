@@ -1,135 +1,74 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Globalization;
+using BarberiaLosHermanos.Interfaces;
 
-
-
-namespace BarberiaLosHermanos
+namespace BarberiaLosHermanos.Clases
     {
-    public class Empleado : Persona, IGestionServicioEmpleado, IGestorCitasEmpleado
+    public class Empleado : Persona, IGestionCitas
         {
-        // Atributos
-        private int idEmpleado;
-        private ePuestos puesto;
-        private double salario;
-        private DateTime fechaContratacion;
-        private List<Servicio> servicioOfrecido;
-        private List<int> clientesAsignados; // IDs de clientes asignados
-        private static int contadorID = 0;
+        public int IdEmpleado { get; set; }
+        public PuestoEmpleado Puesto { get; set; }
+        public double Salario { get; set; }
+        protected List<Cita> citasAsignadas;
+        private static int contadorEmpleados = 1;
 
-        // Enum de puestos
-        public enum ePuestos
+
+        // Enum para tipo de puesto
+        public enum PuestoEmpleado
             {
-            Asistente,
             Barbero,
             Estilista,
-            SoporteTecnico,
+            Asistente,
             Administrativo
             }
 
-        // Propiedades
-        public int IdEmpleado { get => idEmpleado; set => idEmpleado = value; }
-        public ePuestos Puesto { get => puesto; set => puesto = value; }
-        public double Salario { get => salario; set => salario = value; }
-        public DateTime FechaContratacion { get => fechaContratacion; set => fechaContratacion = value; }
-        public List<Servicio> ServicioOfrecido { get => servicioOfrecido; set => servicioOfrecido = value; }
-        public List<int> ClientesAsignados { get => clientesAsignados; set => clientesAsignados = value; }
-        public List<Cita> CitasAsignadas { get => citasAsignadas; set => citasAsignadas = value; }
-
-
-        // Constructor con ID automático
-        public Empleado(string nombre, string apellido1, string apellido2, string telefono, string correo,
-                        ePuestos puesto, double salario, DateTime fechaContratacion)
-            : base(nombre, apellido1, apellido2, telefono, correo)
+        // Constructor
+        public Empleado(string nombre, string apellido1, string apellido2, string telefono, string correo, PuestoEmpleado puesto, double salario) : base(nombre, apellido1, apellido2, telefono, correo)
             {
-            this.idEmpleado = GenerarIdEmpleado();
-            this.puesto = puesto;
-            this.salario = salario;
-            this.fechaContratacion = fechaContratacion;
-            this.servicioOfrecido = new List<Servicio>();
-            this.clientesAsignados = new List<int>();
+            IdEmpleado = contadorEmpleados++;
+            Puesto = puesto;
+            Salario = salario;
+            citasAsignadas = new List<Cita>();
             }
 
-        public Empleado() { }
-
-
-        // Generar ID único
-        private int GenerarIdEmpleado()
+        // Métodos de gestión de citas
+        public void CrearCita(Cita cita)
             {
-            return ++contadorID;
+            citasAsignadas.Add(cita);
+            Console.WriteLine($"El empleado {Nombre} ({Puesto}) agendó una cita para {cita.Cliente.Nombre}.");
             }
 
-        // Mostrar datos del empleado
-        public override string MostrarDatos()
+        public Cita BuscarCitaPorId(int idCita)
             {
-            var sb = new StringBuilder();
-            sb.AppendLine($"ID Empleado: {idEmpleado}");
-            sb.AppendLine($"Nombre: {Nombre} {Apellido1} {Apellido2}");
-            sb.AppendLine($"Teléfono: {Telefono}");
-            sb.AppendLine($"Correo: {Correo}");
-            sb.AppendLine($"Puesto: {puesto}");
-            sb.AppendLine($"Salario: {salario:N2} colones");
-            sb.AppendLine($"Fecha de Contratación: {fechaContratacion:d}");
-            sb.AppendLine($"Servicios Ofrecidos: {string.Join(", ", servicioOfrecido)}");
-            sb.AppendLine($"Clientes Asignados: {string.Join(", ", clientesAsignados)}");
-            return sb.ToString();
-            }
-        // Calcular antigüedad en años
-        public int CalcularAntiguedad()
-            {
-            var hoy = DateTime.Today;
-            int antiguedad = hoy.Year - fechaContratacion.Year;
-            if (fechaContratacion.Date > hoy.AddYears(-antiguedad)) antiguedad--;
-            return antiguedad;
+            return citasAsignadas.Find(c => c.IdCita == idCita);
             }
 
-        //calcular salario anual
-        public double CalcularSalarioAnual()
+        public void CancelarCita(int idCita)
             {
-            return salario * 12;
-            }
-
-        //Validaciones #
-
-        // Validación interna del rol del empleado
-        private bool ValidarServicioPorRol(Servicio servicio)
-            {
-            switch (puesto)
+            var cita = BuscarCitaPorId(idCita);
+            if (cita != null)
                 {
-                case ePuestos.Barbero:
-                    return servicio.Categoria == Servicio.eCategoriaServicio.Barbero;
-                case ePuestos.Estilista:
-                    return servicio.Categoria == Servicio.eCategoriaServicio.Estilista;
-                case ePuestos.Asistente:
-                case ePuestos.Administrativo:
-                    return true; // Pueden ofrecer servicios varios
-                default:
-                    return false;
+                cita.Estado = Cita.EstadoCita.Cancelada;
+                Console.WriteLine($"El empleado {Nombre} canceló la cita #{idCita}.");
+                }
+            else
+                {
+                Console.WriteLine($"No se encontró la cita con ID {idCita} para este empleado.");
                 }
             }
-        //Implementacion de las interfaces
-        //IGestionServicioEmpleado
-        private GestorServicio gestorServicio = new GestorServicio();
-        public void AgregarServicio(Servicio nuevoServicio)
+
+        public void MostrarCitasEmpleado()
             {
-            if (nuevoServicio == null)
-                throw new ArgumentException("El servicio no puede ser nulo.");
-
-            // Validación principal de rol
-            if (!ValidarServicioPorRol(nuevoServicio))
-                throw new InvalidOperationException($"El empleado {Puesto} no puede ofrecer el servicio '{nuevoServicio.NombreServicio}'.");
-
-            servicioOfrecido.Add(nuevoServicio);
+            if (citasAsignadas.Count == 0)
+                Console.WriteLine($"{Nombre} no tiene citas asignadas.");
+            else
+                citasAsignadas.ForEach(c => c.MostrarCita());
             }
 
-        public List<Servicio> ObtenerTodosServicios()
+        // Mostrar información completa del empleado
+        public override void MostrarInfo()
             {
-            return gestorServicio.ObtenerTodosServicios();
+            Console.WriteLine($"ID Empleado: {IdEmpleado} - Puesto: {Puesto} - Salario: ₡{Salario:N0}");
             }
-        //IGestorCitasEmpleado
-
-        } // fin de la clase Empleado
+        }
     }

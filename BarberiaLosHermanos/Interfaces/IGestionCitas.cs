@@ -1,27 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BarberiaLosHermanos.Clases;
 
-namespace BarberiaLosHermanos
+namespace BarberiaLosHermanos.Interfaces
     {
+    // Define las acciones básicas de gestión de citas
     public interface IGestionCitas
         {
-        // Agregar una nueva cita
-        void AgregarCita(Cita cita);
-
-        // Cancelar una cita existente
-        bool CancelarCita(int idCita);
-
-        // Confirmar cita (solo por el empleado)
-        bool ConfirmarCita(int idCita);
-
-        // Mostrar todas las citas (puede ser solo para administración)
-        void MostrarTodasLasCitas();
-
-        // Obtener citas por cliente o empleado
-        List<Cita> ObtenerCitasPorIdCliente(int idCliente);
-        List<Cita> ObtenerCitasPorIdEmpleado(int idEmpleado);
+        void CrearCita(Cita cita);
+        Cita BuscarCitaPorId(int idCita);
+        void CancelarCita(int idCita);
         }
     }
