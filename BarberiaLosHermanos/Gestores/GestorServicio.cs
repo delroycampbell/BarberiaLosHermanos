@@ -1,153 +1,102 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using BarberiaLosHermanos.Clases;
 
-namespace BarberiaLosHermanos
+namespace BarberiaLosHermanos.Gestores
     {
-    public class GestorServicio
+    public class GestorServicios
         {
-        // Atributos privados
-        private List<Servicio> listaServicios;
+        private List<Servicio> servicios;
 
         // Constructor
-        public GestorServicio()
+        public GestorServicios()
             {
-            listaServicios = new List<Servicio>();
+            servicios = new List<Servicio>();
+            InicializarServiciosBase();
             }
 
-        //Metodos de la clase
-
-        //Agregar un nuevo servicio y su precio
-        public void AgregarServicio(string nombreServicio, double precio, string descripcion, Servicio.eCategoriaServicio categoria)
+        // Cargar servicios iniciales (sin ID manual)
+        public void InicializarServiciosBase()
             {
-            if (string.IsNullOrWhiteSpace(nombreServicio))
-                throw new ArgumentException("El nombre del servicio no puede estar vacío.");
+            servicios.Clear();
 
-            if (precio < 0)
-                throw new ArgumentException("El precio del servicio no puede ser negativo.");
+            servicios.Add(new Servicio("Corte de Caballero", 5000, Empleado.PuestoEmpleado.Barbero));
+            servicios.Add(new Servicio("Afeitado Clásico", 3500, Empleado.PuestoEmpleado.Barbero));
+            servicios.Add(new Servicio("Tinte de Cabello", 7000, Empleado.PuestoEmpleado.Estilista));
+            servicios.Add(new Servicio("Lavado de Cabello", 2000, Empleado.PuestoEmpleado.Asistente));
 
-            int nuevoId = listaServicios.Count > 0 ? listaServicios.Max(s => s.IdServicio) + 1 : 1;
-
-            if (listaServicios.Any(s => s.NombreServicio.Equals(nombreServicio.Trim(), StringComparison.OrdinalIgnoreCase)
-                                     && s.Categoria == categoria))
-                throw new InvalidOperationException($"Ya existe un servicio '{nombreServicio}' en la categoría {categoria}.");
-
-            var nuevoServicio = new Servicio(nuevoId, nombreServicio.Trim(), precio, descripcion.Trim(), categoria);
-            listaServicios.Add(nuevoServicio);
-
-            Console.WriteLine($"Servicio '{nombreServicio}' agregado correctamente con categoría {categoria}.");
+            Console.WriteLine("Servicios base inicializados correctamente.");
             }
 
-        //Sobrecarga: agregar un objeto Servicio completo
-        public void AgregarServicio(Servicio nuevoServicio)
+        // Mostrar servicios
+        public void MostrarServicios()
             {
-            if (nuevoServicio == null)
-                throw new ArgumentNullException(nameof(nuevoServicio), "El servicio no puede ser nulo.");
-
-            if (listaServicios.Any(s => s.IdServicio == nuevoServicio.IdServicio))
-                throw new InvalidOperationException("Ya existe un servicio con el mismo ID.");
-
-            if (nuevoServicio.Precio < 0)
-                throw new ArgumentException("El precio del servicio no puede ser negativo.");
-
-            listaServicios.Add(nuevoServicio);
-            Console.WriteLine($"Servicio '{nuevoServicio.NombreServicio}' agregado correctamente (por objeto).");
-            }
-
-        //Listar todos los servicios (copia segura)
-        public List<Servicio> ObtenerTodosServicios()
-            {
-            return new List<Servicio>(listaServicios);
-            }
-
-        //Buscar por nombre
-        public List<Servicio> BuscarServicioPorNombre(string nombreServicio)
-            {
-            if (string.IsNullOrWhiteSpace(nombreServicio))
-                {
-                Console.WriteLine("Debe ingresar un nombre de servicio válido.");
-                return new List<Servicio>();
-                }
-
-            string nombreLimpio = nombreServicio.Trim();
-
-            var resultados = listaServicios
-                .Where(s => s.NombreServicio.Equals(nombreLimpio, StringComparison.OrdinalIgnoreCase))
-                .ToList();
-
-            if (resultados.Count == 0)
-                Console.WriteLine($"No se encontró ningún servicio con el nombre '{nombreLimpio}'.");
-
-            return resultados;
-            }
-
-        //Buscar por ID (devuelve solo uno)
-        public Servicio BuscarServicioPorID(int idServicio)
-            {
-            if (idServicio <= 0)
-                {
-                Console.WriteLine("El ID ingresado no es válido.");
-                return null;
-                }
-
-            var servicio = listaServicios.FirstOrDefault(s => s.IdServicio == idServicio);
-
-            if (servicio == null)
-                {
-                Console.WriteLine($"No se encontró ningún servicio con el ID '{idServicio}'.");
-                return null;
-                }
-
-            return servicio;
-            }
-
-        //Actualizar precio de un servicio existente por ID
-        public bool ActualizarPrecioPorId(int idServicio, double nuevoPrecio)
-            {
-            if (nuevoPrecio < 0)
-                throw new ArgumentException("El precio no puede ser negativo.");
-
-            var servicio = BuscarServicioPorID(idServicio);
-            if (servicio == null)
-                return false;
-
-            servicio.Precio = nuevoPrecio;
-            Console.WriteLine($"Precio del servicio con ID {idServicio} actualizado a ₡{nuevoPrecio:0.00}.");
-            return true;
-            }
-
-        //Actualizar precio de un servicio existente por nombre
-        public bool ActualizarPrecioPorNombre(string nombreServicio, double nuevoPrecio)
-            {
-            if (string.IsNullOrWhiteSpace(nombreServicio))
-                throw new ArgumentException("El nombre del servicio no puede estar vacío.");
-
-            if (nuevoPrecio < 0)
-                throw new ArgumentException("El precio no puede ser negativo.");
-
-            var servicios = BuscarServicioPorNombre(nombreServicio);
             if (servicios.Count == 0)
-                return false;
+                {
+                Console.WriteLine("No hay servicios registrados.");
+                return;
+                }
 
+            Console.WriteLine("=== LISTA DE SERVICIOS ===");
             foreach (var servicio in servicios)
-                servicio.Precio = nuevoPrecio;
-
-            Console.WriteLine($"Se actualizó el precio de {servicios.Count} servicio(s) a ₡{nuevoPrecio:0.00}.");
-            return true;
+                servicio.MostrarServicio();
             }
 
-        //Eliminar servicio por ID
-        public bool EliminarServicio(int idServicio)
+        // Agregar servicio
+        public void AgregarServicio(Servicio nuevo)
             {
-            var servicio = BuscarServicioPorID(idServicio);
-            if (servicio == null)
-                return false;
+            if (servicios.Any(s => s.IdServicio == nuevo.IdServicio))
+                {
+                Console.WriteLine($"Ya existe un servicio con el ID {nuevo.IdServicio}.");
+                return;
+                }
 
-            listaServicios.Remove(servicio);
+            servicios.Add(nuevo);
+            Console.WriteLine($"Servicio '{nuevo.Nombre}' agregado correctamente con ID {nuevo.IdServicio}.");
+            }
+
+        // Modificar servicio
+        public void ModificarServicio(int idServicio, string nuevoNombre, double nuevoPrecio, Empleado.PuestoEmpleado nuevoTipo)
+            {
+            var servicio = servicios.FirstOrDefault(s => s.IdServicio == idServicio);
+            if (servicio == null)
+                {
+                Console.WriteLine($"No se encontró el servicio con ID {idServicio}.");
+                return;
+                }
+
+            servicio.Nombre = nuevoNombre;
+            servicio.Precio = nuevoPrecio;
+            servicio.TipoEmpleado = nuevoTipo;
+
+            Console.WriteLine($"Servicio con ID {idServicio} modificado correctamente.");
+            }
+
+        // Eliminar servicio
+        public void EliminarServicio(int idServicio)
+            {
+            var servicio = servicios.FirstOrDefault(s => s.IdServicio == idServicio);
+            if (servicio == null)
+                {
+                Console.WriteLine($"No se encontró el servicio con ID {idServicio}.");
+                return;
+                }
+
+            servicios.Remove(servicio);
             Console.WriteLine($"Servicio con ID {idServicio} eliminado correctamente.");
-            return true;
+            }
+
+        // Buscar servicio por ID
+        public Servicio BuscarServicioPorId(int idServicio)
+            {
+            return servicios.FirstOrDefault(s => s.IdServicio == idServicio);
+            }
+
+        // Filtrar servicios según tipo de empleado
+        public List<Servicio> ObtenerServiciosPorTipo(Empleado.PuestoEmpleado tipo)
+            {
+            return servicios.Where(s => s.TipoEmpleado == tipo).ToList();
             }
         }
-    } //fin de la clase GestorServicio
+    }
