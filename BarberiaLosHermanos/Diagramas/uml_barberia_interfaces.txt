@@ -1,139 +1,127 @@
 @startuml
-
-' =======================
-'     Enumeraciones
-' =======================
-
-enum eEstadoCita {
-  Pendiente
-  Confirmada
-  Cancelada
-  Completada
-}
-
-enum eTipoCita {
-  Barberia
-  Spa
-  Masaje
-  Facial
-  Depilacion
-  Otro
-}
-
-enum eCategoriaServicio {
-  Barbero
-  Manicurista
-  Estilista
-  Masajista
-}
-
-' =======================
-'     Interfaces
-' =======================
-
-interface IGestionCitas {
-  + AgregarCita(cita: Cita): void
-  + CancelarCita(idCita: int): void
-  + VerCitas(listaGlobal: List<Cita>): List<Cita>
-}
-
-interface IGestionServicios {
-  + AgregarServicio(servicio: Servicio): void
-  + EliminarServicio(idServicio: int): void
-  + ModificarPrecio(idServicio: int, nuevoPrecio: double): void
-  + VerServicios(): List<Servicio>
-}
-
-' =======================
-'     Clases Principales
-' =======================
-
-abstract class Persona {
-  - nombre: String
-  - apellido1: String
-  - apellido2: String
-  - telefono: String
-  - correo: String
-  + Nombre { get; set; }
-  + Apellido1 { get; set; }
-  + Apellido2 { get; set; }
-  + Telefono { get; set; }
-  + Correo { get; set; }
-  + ValidarCorreo(correo: String): bool
-  + ValidarTelefono(telefono: String): bool
+class MenuPrincipal {
+  - GestorClientes gestorClientes
+  - GestorEmpleados gestorEmpleados
+  - GestorCitas gestorCitas
+  - GestorServicios gestorServicios
+  - GestorHorarios gestorHorarios
+  + MostrarMenu()
+  + MenuClientes()
+  + MenuEmpleados()
+  + MenuServicios()
+  + MenuCitas()
 }
 
 class Cliente {
-  - idCliente: int
-  - historialCitas: List<Cita>
-  + SolicitarCita(servicioSolicitado: Servicio, fechaCita: DateTime): Cita
+  - static int contadorID
+  - int IdCliente
+  - string Nombre
+  - string Apellido1
+  - string Apellido2
+  - string Telefono
+  - string Correo
+  + Cliente(nombre, a1, a2, telefono, correo)
 }
 
 class Empleado {
-  - idEmpleado: int
-  - puesto: String
-  - salario: double
-  - fechaContratacion: DateTime
-  + CalcularSalario(salario: Double): Double
-  + ConfirmarCita(cita: Cita): void
-}
-
-class Barbero {
-  - especialidad: String
-  - horasTrabajadas: Double
-  - comisionPorCorte: Double
-  + RegistrarCorte(precioServicio: Double): void
+  - static int contadorID
+  - int IdEmpleado
+  - string Nombre
+  - string Apellido1
+  - string Apellido2
+  - string Telefono
+  - string Correo
+  - double Salario
+  - PuestoEmpleado Puesto
+  + Empleado(nombre, a1, a2, telefono, correo, puesto, salario)
+  enum PuestoEmpleado { Barbero, Estilista, Asistente, Administrativo }
 }
 
 class Servicio {
-  - idServicio: int
-  - nombre: String
-  - descripcion: String
-  - precio: Double
-  - categoria: eCategoriaServicio
-  + MostrarServicio(): void
+  - static int contadorID
+  - int IdServicio
+  - string Nombre
+  - double Precio
+  - PuestoEmpleado TipoEmpleado
+  + Servicio(nombre, precio, tipo)
 }
 
 class Cita {
-  - idCita: int
-  - cliente: Cliente
-  - empleado: Empleado
-  - servicios: List<Servicio>
-  - estado: eEstadoCita
-  - tipoCita: eTipoCita
-  - fechaHoraCita: DateTime
-  + MostrarCita(): void
+  - static int contadorID
+  - int IdCita
+  - Cliente Cliente
+  - Empleado Empleado
+  - Servicio Servicio
+  - DateTime FechaHora
+  - EstadoCita Estado
+  + Cita(cliente, empleado, servicio, fechaHora)
+  enum EstadoCita { Pendiente, Confirmada, Cancelada }
+}
+
+class Horario {
+  - DateTime Inicio
+  - bool Disponible
+  + Horario(fechaHora)
+}
+
+class GestorClientes {
+  - List<Cliente> _clientes
+  + RegistrarCliente(cliente)
+  + BuscarPorNombre(nombre)
+  + MostrarClientes()
+}
+
+class GestorEmpleados {
+  - List<Empleado> _empleados
+  + AgregarEmpleado(empleado)
+  + MostrarEmpleados()
+  + MostrarEmpleadosParaCita()
+  + BuscarPorId(id)
+}
+
+class GestorServicios {
+  - List<Servicio> _servicios
+  + AgregarServicio(servicio)
+  + ModificarServicio(id, nombre, precio, tipo)
+  + EliminarServicio(id)
+  + InicializarServiciosBase()
+  + MostrarServicios()
+  + BuscarServicioPorId(id)
 }
 
 class GestorCitas {
-  - listaCitas: List<Cita>
-  + AgregarCita(cita: Cita): void
-  + BuscarPorFecha(fecha: DateTime): List<Cita>
+  - List<Cita> _citas
+  + AgregarCita(cita)
+  + CancelarCita(id)
+  + ConfirmarCita(id)
+  + MostrarTodas()
+  + BuscarPorFecha(fecha)
+  + MostrarPorCliente(idCliente)
+  + ExisteCitaEnHorario(fechaHora, empleado)
 }
 
-class GestorServicio {
-  - listaServicios: List<Servicio>
-  + AgregarServicio(servicio: Servicio): void
-  + BuscarServicio(nombre: String): Servicio
+class GestorHorarios {
+  - GestorCitas gestorCitas
+  + MostrarDiasDisponibles()
+  + ObtenerDiasDisponibles()
+  + ObtenerHorasDisponibles(dia, empleado)
+  + MostrarHorasDisponibles(horas)
+  + ReservarPorIndice(idx)
 }
 
-' =======================
-'     Relaciones UML
-' =======================
+MenuPrincipal --> GestorClientes
+MenuPrincipal --> GestorEmpleados
+MenuPrincipal --> GestorCitas
+MenuPrincipal --> GestorServicios
+MenuPrincipal --> GestorHorarios
 
-Persona <|-- Cliente
-Persona <|-- Empleado
-Empleado <|-- Barbero
-
-Cliente ..|> IGestionCitas
-Empleado ..|> IGestionCitas
-Empleado ..|> IGestionServicios
-
-GestorCitas *-- Cita
-GestorServicio *-- Servicio
-
+GestorCitas --> Cita
 Cita --> Cliente
 Cita --> Empleado
-Cita --> "*" Servicio
-
+Cita --> Servicio
+GestorHorarios --> Horario
+GestorHorarios --> GestorCitas
+GestorEmpleados --> Empleado
+GestorClientes --> Cliente
+GestorServicios --> Servicio
 @enduml
