@@ -12,7 +12,7 @@ namespace BarberiaLosHermanos.Clases
             {
             Inicio = inicio;
             Fin = fin;
-            Disponible = true; // por defecto está libre
+            Disponible = true;
             }
 
         public void Mostrar()

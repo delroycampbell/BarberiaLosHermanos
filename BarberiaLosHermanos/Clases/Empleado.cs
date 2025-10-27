@@ -68,7 +68,7 @@ namespace BarberiaLosHermanos.Clases
         // Mostrar información completa del empleado
         public override void MostrarInfo()
             {
-            Console.WriteLine($"ID Empleado: {IdEmpleado} - Puesto: {Puesto} - Salario: ₡{Salario:N0}");
+            Console.WriteLine($"ID Empleado: {IdEmpleado} - Puesto: {Puesto} - Salario: {Salario:0.00} colones");
             }
         }
     }
