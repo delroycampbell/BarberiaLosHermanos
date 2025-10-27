@@ -16,14 +16,8 @@ namespace BarberiaLosHermanos.Gestores
 
         public void AgregarCita(Cita cita)
             {
-            if (cita == null)
-                throw new ArgumentNullException(nameof(cita), "La cita no puede ser nula.");
-
-            if (listaCitas.Any(c => c.FechaHoraCita == cita.FechaHoraCita))
-                throw new InvalidOperationException("Ya existe una cita en ese horario.");
-
             listaCitas.Add(cita);
-            Console.WriteLine($"Cita creada correctamente con ID: {cita.IdCita}");
+            Console.WriteLine("Cita registrada exitosamente.");
             }
 
         public void MostrarTodas()
@@ -34,8 +28,11 @@ namespace BarberiaLosHermanos.Gestores
                 return;
                 }
 
-            foreach (var cita in listaCitas)
-                cita.MostrarCita();
+            Console.WriteLine("=== CITAS REGISTRADAS ===");
+            foreach (var c in listaCitas)
+                {
+                Console.WriteLine($"ID: {c.IdCita} | Cliente: {c.Cliente.Nombre} | Empleado: {c.Empleado.Nombre} | Fecha: {c.FechaHoraCita:dddd dd/MM/yyyy HH:mm} | Estado: {c.Estado}");
+                }
             }
 
         public void BuscarPorFecha(DateTime fecha)
@@ -48,7 +45,9 @@ namespace BarberiaLosHermanos.Gestores
                 }
 
             foreach (var c in citas)
-                c.MostrarCita();
+                {
+                Console.WriteLine($"ID: {c.IdCita} | Cliente: {c.Cliente.Nombre} | Empleado: {c.Empleado.Nombre} | Hora: {c.FechaHoraCita:HH:mm}");
+                }
             }
 
         public void CancelarCita(int id)
@@ -61,7 +60,7 @@ namespace BarberiaLosHermanos.Gestores
                 }
 
             cita.Estado = Cita.EstadoCita.Cancelada;
-            Console.WriteLine($"Cita {id} cancelada correctamente.");
+            Console.WriteLine("Cita cancelada correctamente.");
             }
 
         public void ConfirmarCita(int id)
@@ -74,25 +73,31 @@ namespace BarberiaLosHermanos.Gestores
                 }
 
             cita.Estado = Cita.EstadoCita.Confirmada;
-            Console.WriteLine($"Cita {id} confirmada correctamente.");
+            Console.WriteLine("Cita confirmada correctamente.");
+            }
+
+        public bool ExisteCitaEnHorario(Empleado empleado, DateTime fechaHora)
+            {
+            return listaCitas.Any(c =>
+                c.Empleado.IdEmpleado == empleado.IdEmpleado &&
+                c.FechaHoraCita == fechaHora &&
+                c.Estado != Cita.EstadoCita.Cancelada);
             }
 
         public void MostrarPorCliente(int idCliente)
             {
-            var citasCliente = listaCitas.Where(c => c.Cliente.IdCliente == idCliente).ToList();
-            if (citasCliente.Count == 0)
+            var citas = listaCitas.Where(c => c.Cliente.IdCliente == idCliente).ToList();
+            if (citas.Count == 0)
                 {
-                Console.WriteLine("Este cliente no tiene citas registradas.");
+                Console.WriteLine("El cliente no tiene citas registradas.");
                 return;
                 }
 
-            foreach (var c in citasCliente)
-                c.MostrarCita();
-            }
-
-        public bool ExisteCitaEnHorario(DateTime fechaHora)
-            {
-            return listaCitas.Any(c => c.FechaHoraCita == fechaHora);
+            Console.WriteLine($"=== HISTORIAL DE CITAS DEL CLIENTE {idCliente} ===");
+            foreach (var c in citas)
+                {
+                Console.WriteLine($"ID: {c.IdCita} | Fecha: {c.FechaHoraCita:dd/MM/yyyy HH:mm} | Estado: {c.Estado}");
+                }
             }
         }
     }

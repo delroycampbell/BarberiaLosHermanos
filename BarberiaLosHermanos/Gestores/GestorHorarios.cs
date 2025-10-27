@@ -7,78 +7,69 @@ namespace BarberiaLosHermanos.Gestores
     {
     public class GestorHorarios
         {
-        private readonly List<TimeSlot> _bloques;
+        private readonly GestorCitas _gestorCitas;
+        private List<Horario> _horariosDisponibles;
 
-        public GestorHorarios()
+        public GestorHorarios(GestorCitas gestorCitas)
             {
-            _bloques = new List<TimeSlot>();
-            GenerarBloquesDisponibles();
+            _gestorCitas = gestorCitas;
+            _horariosDisponibles = new List<Horario>();
             }
 
-        private void GenerarBloquesDisponibles()
+        // Genera días válidos (desde 7 días adelante hasta 3 meses, sin domingos)
+        public List<DateTime> ObtenerDiasDisponibles()
             {
-            DateTime hoy = DateTime.Now.Date;
-            DateTime inicio = hoy.AddDays(7);
-            DateTime fin = hoy.AddMonths(3);
+            var dias = new List<DateTime>();
+            DateTime inicio = DateTime.Now.Date.AddDays(7);
+            DateTime limite = inicio.AddMonths(3);
 
-            for (DateTime fecha = inicio; fecha <= fin; fecha = fecha.AddDays(1))
+            for (DateTime d = inicio; d <= limite; d = d.AddDays(1))
                 {
-                if (fecha.DayOfWeek == DayOfWeek.Sunday) continue;
-
-                for (int hora = 9; hora < 17; hora++)
-                    {
-                    var ini = new DateTime(fecha.Year, fecha.Month, fecha.Day, hora, 0, 0);
-                    var finBloque = ini.AddHours(1);
-                    _bloques.Add(new TimeSlot(ini, finBloque));
-                    }
-                }
-            }
-
-        public List<TimeSlot> ObtenerDisponibles()
-            {
-            return _bloques.Where(b => b.Disponible).ToList();
-            }
-
-        public void MostrarDisponibles(int max = 15)
-            {
-            var disp = ObtenerDisponibles().Take(max).ToList();
-            if (disp.Count == 0)
-                {
-                Console.WriteLine("No hay horarios disponibles.");
-                return;
+                if (d.DayOfWeek != DayOfWeek.Sunday)
+                    dias.Add(d);
                 }
 
-            Console.WriteLine("\n=== HORARIOS DISPONIBLES (siguientes) ===");
-            for (int i = 0; i < disp.Count; i++)
+            return dias;
+            }
+
+        public void MostrarDiasDisponibles()
+            {
+            var dias = ObtenerDiasDisponibles();
+            Console.WriteLine("=== DÍAS DISPONIBLES ===");
+            for (int i = 0; i < dias.Count; i++)
+                Console.WriteLine($"{i + 1}. {dias[i]:dddd dd/MM/yyyy}");
+            }
+
+        public List<Horario> ObtenerHorasDisponibles(DateTime dia, Empleado empleado)
+            {
+            var horas = new List<Horario>();
+
+            for (int h = 9; h <= 17; h++) // 9 a 17 (8 horas)
                 {
-                Console.Write($"{i + 1}. ");
-                disp[i].Mostrar();
+                DateTime hora = new DateTime(dia.Year, dia.Month, dia.Day, h, 0, 0);
+                if (!_gestorCitas.ExisteCitaEnHorario(empleado, hora))
+                    horas.Add(new Horario(hora));
                 }
+
+            _horariosDisponibles = horas;
+            return horas;
             }
 
-        public TimeSlot ReservarPorIndice(int indiceBase1, out int totalMostrados)
+        public void MostrarHorasDisponibles(List<Horario> horas)
             {
-            var disp = ObtenerDisponibles().Take(15).ToList();
-            totalMostrados = disp.Count;
-            if (indiceBase1 < 1 || indiceBase1 > disp.Count) return null;
-
-            var slot = disp[indiceBase1 - 1];
-            slot.Disponible = false;
-            return slot;
+            Console.WriteLine("\n=== HORARIOS DISPONIBLES ===");
+            for (int i = 0; i < horas.Count; i++)
+                Console.WriteLine($"{i + 1}. {horas[i].Inicio:HH:mm}");
             }
 
-        public bool MarcarOcupado(DateTime inicio)
+        public Horario ReservarPorIndice(int indice)
             {
-            var slot = _bloques.FirstOrDefault(b => b.Inicio == inicio);
-            if (slot == null || !slot.Disponible) return false;
-            slot.Disponible = false;
-            return true;
-            }
+            if (indice < 1 || indice > _horariosDisponibles.Count)
+                return null;
 
-        public bool EstaDisponible(DateTime inicio)
-            {
-            var slot = _bloques.FirstOrDefault(b => b.Inicio == inicio);
-            return slot != null && slot.Disponible;
+            var horario = _horariosDisponibles[indice - 1];
+            horario.Disponible = false;
+            return horario;
             }
         }
     }

@@ -33,6 +33,20 @@ namespace BarberiaLosHermanos.Gestores
             foreach (var e in _empleados) e.MostrarInfo();
             }
 
+        public void MostrarEmpleadosParaCita()
+            {
+            if (_empleados.Count == 0)
+                {
+                Console.WriteLine("No hay empleados registrados.");
+                return;
+                }
+
+            Console.WriteLine("=== EMPLEADOS DISPONIBLES ===");
+            foreach (var e in _empleados)
+                Console.WriteLine($"ID: {e.IdEmpleado} | {e.Nombre} {e.Apellido1} ({e.Puesto})");
+            }
+
+
         public Empleado BuscarPorId(int id)
             {
             return _empleados.FirstOrDefault(e => e.IdEmpleado == id);
